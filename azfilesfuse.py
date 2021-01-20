@@ -126,13 +126,13 @@ class AzureFiles(LoggingMixIn, Operations):
     '''
     A FUSE File Sytem for using Azure Files with a SAS token for connecting
     '''
-    def __init__(self, azure_storage_account_name, azure_file_share_name, sas_token):
+    def __init__(self, azure_storage_account_name, azure_file_share_name, account_key):
         LoggingMixIn.log.addHandler(console_handler)
         logger.info("Initializing AzureFiles Fuse Driver Implementation:%s %s", azure_storage_account_name, azure_file_share_name)
         self._azure_storage_account_name = azure_storage_account_name
         self._azure_file_share_name = azure_file_share_name
-        self._sas_token = sas_token.lstrip("?")
-        self._files_service = file.FileService(self._azure_storage_account_name, sas_token=self._sas_token, request_session=Session())        
+        self._account_key = account_key
+        self._files_service = file.FileService(self._azure_storage_account_name, account_key=self._account_key, request_session=Session())        
         self._prior_write_failure = False
         self.writes = deque()
         self.dir_cache = {}
@@ -608,7 +608,7 @@ if __name__ == '__main__':
                 logger.error("Failed to remove fuseArgs file:%s", e)
 
         if len(argv) != 5:
-            print('usage: {} <azure_storage_account_name> <azure_file_share_name> <sas_token> <mount_point>'.format(argv[0]))
+            print('usage: {} <azure_storage_account_name> <azure_file_share_name> <account_key> <mount_point>'.format(argv[0]))
             syslog.syslog(syslog.LOG_ERR, "Arguments to Python Fuse Driver Bad: {}".format(argv))
             exit(1)
 
